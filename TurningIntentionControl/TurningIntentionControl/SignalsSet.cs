@@ -45,22 +45,6 @@ namespace ParamincsSNMPcontrol
             }
         }
 
-        //*Function to set signal flows directly (PROTOTYPE)
-        public void SetFlows()
-        {
-            SignalNode SN = SigNodes[0];
-            ParamicsSNMP2007.SignalFlowControl sfcSFC;
-            ParamicsSNMP2007.SignalFlowPriorityCol colSFP;
-            ParamicsSNMP2007.SignalFlowPriority sfpSFP;
-            double
-                LinMove,
-                LoutMove;
-            //sfcSFC = Sconnect.PCont.GetSignalFlowControl(ref SN.MiBFlowRow);
-            //colSFP = Sconnect.PCont.GetSignalFlowPriorities(ref SN.MiBFlowRow);
-
-
-        }
-
         //*Function to set signal stages (PROTOTYPE)
         public void SetStages(int Stage, int Junction)
         {
@@ -92,4 +76,20 @@ namespace ParamincsSNMPcontrol
             MiBNodeRow = MN;
         }
     }
+
+    //*Function to set signal flows directly (PROTOTYPE)
+    /*public void SetFlows()
+    {
+        SignalNode SN = SigNodes[0];
+        ParamicsSNMP2007.SignalFlowControl sfcSFC;
+        ParamicsSNMP2007.SignalFlowPriorityCol colSFP;
+        ParamicsSNMP2007.SignalFlowPriority sfpSFP;
+        double
+            LinMove,
+            LoutMove;
+        //sfcSFC = Sconnect.PCont.GetSignalFlowControl(ref SN.MiBFlowRow);
+        //colSFP = Sconnect.PCont.GetSignalFlowPriorities(ref SN.MiBFlowRow);
+
+
+    }*/
 }

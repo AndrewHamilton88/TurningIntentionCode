@@ -69,9 +69,8 @@ namespace ParamincsSNMPcontrol
                 throw (new Exception("The number of stages does not match the number of agents"));
             }
 
-            int Stage = 1;
+
             int WinningStage = 1;
-            double BidHolder = 0;
 
             //This is where AH adds his stage selector...
             AllStages AS = new AllStages();
@@ -79,8 +78,9 @@ namespace ParamincsSNMPcontrol
 
             //Number of Stages - Reads a file to generate stage list
             //AllPossibleStages = AS.ReturnAllCrossroadStages();
+            AllPossibleStages = AS.StagesGenerator(@"OptimalCrossroad17Stages.txt");   //This is for the 17 stage option
             //AllPossibleStages = AS.StagesGenerator(@"OptimalCrossroad16Stages.txt");   //This is for the 16 stage option
-            AllPossibleStages = AS.StagesGenerator(@"OptimalCrossroad12Stages.txt");   //This is for the 12 stage option
+            //AllPossibleStages = AS.StagesGenerator(@"OptimalCrossroad12Stages.txt");   //This is for the 12 stage option
             //AllPossibleStages = AS.StagesGenerator(@"OptimalCrossroad8Stages.txt");   //This is for the 8 stage option
             //Console.WriteLine(PreviousStage);
             
@@ -93,8 +93,10 @@ namespace ParamincsSNMPcontrol
             //WinningStage = AS.WithinXPercentStage(AllPossibleStages, JA.AllPhases, LastStage, 15.0);   //This is for the within "X" percent bid
 
             WinningStage = AS.SimpleHighestStage(AllPossibleStages, JA.AllPhases);                   //This is for the basic highest bid
-            
-            /*foreach (StageAgent SA in JA.Stages)
+
+            /*int Stage = 1;
+            double BidHolder = 0;
+            foreach (StageAgent SA in JA.Stages)
             {
                 Bid B = SA.StageBid;
                 if (B.Scalar > BidHolder)               //This is Simon's original stage selection process
@@ -123,59 +125,6 @@ namespace ParamincsSNMPcontrol
         }
     }
 
-    //*Strategy 1 Count Stationary vehicles
-    public class StationaryVehicles : BasicStrategy
-    {
-
-        public override void ProcessLane(LaneAgent SA)
-        {
-            Bid B = new Bid();
-            int SVcount = 0;
-            foreach (double Speed in SA.SpeedList)
-            {
-                if (Speed < 2)
-                {
-                    SVcount++;
-                }
-            }
-            B.Scalar = Convert.ToDouble(SVcount);
-            SA.LaneBid = B;
-            
-        }
-
-        public override void ProcessZone(ZoneAgent ZA,int ToD, int[] PreviousStage)
-        {
-            base.ProcessZone(ZA,ToD,PreviousStage);
-        } 
-    }
-
-    //*Strategy 2 High Bid
-    public class HighBid : BasicStrategy
-    {
-
-        public override void ProcessLane(LaneAgent SA)
-        {
-            
-            Bid B = new Bid();
-
-            if (SA.Count != 0)
-            {
-                B.Scalar = SA.Count*(1 - 0.01 * SA.AvSpeed - 0.001 * SA.AvDist);
-            }
-            else
-            {
-                B.Scalar = 0.0;
-            }
-            SA.LaneBid = B;
-
-        }
-        
-        public override void ProcessZone(ZoneAgent ZA,int ToD, int[] PreviousStage)
-        {
-            base.ProcessZone(ZA,ToD,PreviousStage);
-            
-        } 
-    }
 
     //*Strategy 3 High Bid with Turning Intention
     public class HighBidTurn : BasicStrategy  // AH's turning intention High Bid approach
@@ -209,8 +158,64 @@ namespace ParamincsSNMPcontrol
         }
     }
 
+
+    //*Strategy 1 Count Stationary vehicles
+    /*public class StationaryVehicles : BasicStrategy
+    {
+
+        public override void ProcessLane(LaneAgent SA)
+        {
+            Bid B = new Bid();
+            int SVcount = 0;
+            foreach (double Speed in SA.SpeedList)
+            {
+                if (Speed < 2)
+                {
+                    SVcount++;
+                }
+            }
+            B.Scalar = Convert.ToDouble(SVcount);
+            SA.LaneBid = B;
+            
+        }
+
+        public override void ProcessZone(ZoneAgent ZA,int ToD, int[] PreviousStage)
+        {
+            base.ProcessZone(ZA,ToD,PreviousStage);
+        } 
+    }*/
+
+    //*Strategy 2 High Bid
+    /*public class HighBid : BasicStrategy
+    {
+
+        public override void ProcessLane(LaneAgent SA)
+        {
+            
+            Bid B = new Bid();
+
+            if (SA.Count != 0)
+            {
+                B.Scalar = SA.Count*(1 - 0.01 * SA.AvSpeed - 0.001 * SA.AvDist);
+            }
+            else
+            {
+                B.Scalar = 0.0;
+            }
+            SA.LaneBid = B;
+
+        }
+        
+        public override void ProcessZone(ZoneAgent ZA,int ToD, int[] PreviousStage)
+        {
+            base.ProcessZone(ZA,ToD,PreviousStage);
+            
+        } 
+    }*/
+
+
     //*Strategy 4 HumanControl
-    public class Trainer : HighBid
+    /*public class Trainer : HighBid
     {
         public override void ProcessJunction(JunctionAgent JA, int[] PreviousStage)
         {
@@ -875,7 +880,7 @@ namespace ParamincsSNMPcontrol
         }
     }*/
 
-    public class MultiHighBid : HighBid
+    /*public class MultiHighBid : HighBid
     {
         double
             Distance,
@@ -952,7 +957,7 @@ namespace ParamincsSNMPcontrol
                         break;
                 }
                 ProcessJunction(ZA.Junctions[1], PreviousStage);
-            }
+            }*/
             /*// ad hoc implementation for High Rd Pair
             double WestBid = ZA.Junctions[0].Stages[ZA.Junctions[0].NextStage - 1].StageBid.Scalar;
             double EastBid = ZA.Junctions[1].Stages[ZA.Junctions[1].NextStage - 1].StageBid.Scalar;
@@ -997,7 +1002,7 @@ namespace ParamincsSNMPcontrol
                         break;
                 }
                 ProcessJunction(ZA.Junctions[1]);
-            }*/
+            }
             base.ProcessZone(ZA,ToD, PreviousStage);
         }
 
@@ -1016,6 +1021,6 @@ namespace ParamincsSNMPcontrol
         }
     }
 
-
+    */
     
 }

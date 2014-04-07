@@ -12,7 +12,7 @@ namespace ParamicsSNMPcontrol
 {
     public class RunTwinProgram
     {
-        string IP;
+        /*string IP;
         int Port;
         string ConfigFile;
         double
@@ -48,6 +48,6 @@ namespace ParamicsSNMPcontrol
             Runner Run = new Runner(TestC);
             Run.SynchRun(89);
         }
-
+        */
     }
 }

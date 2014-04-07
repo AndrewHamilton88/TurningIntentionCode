@@ -50,7 +50,7 @@ namespace ParamicsSNMPcontrol
             Coordinate Temp = new Coordinate(ConfigFile, ST1, IP, port);
             return (Temp);
         }
-        public NeuralNet BuildNeuralNet()
+        /*public NeuralNet BuildNeuralNet()
         {
             NeuralNet Temp = new NeuralNet(JunctionWeightFiles, JunctionNodeIDs);
             return (Temp);
@@ -59,7 +59,7 @@ namespace ParamicsSNMPcontrol
         {
             Logit Temp = new Logit(JunctionWeightFiles, JunctionNodeIDs);
             return (Temp);
-        }
+        }*/
 
     }
 }

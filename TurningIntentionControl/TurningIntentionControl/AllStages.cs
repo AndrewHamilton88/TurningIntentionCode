@@ -369,7 +369,7 @@ namespace ParamincsSNMPcontrol
                     TempStageValue = TempStageValue + TempPhaseValue;
                 }
                 //Console.WriteLine(TempStageValue);
-                if (TempStageValue >= MaxStageValue)
+                if (TempStageValue >= MaxStageValue)  //By making this 'greater than or EQUAL to' then the program will automatically choose the higher stage number if an equal bid arises
                 {
                     MaxStageValue = TempStageValue;
                     BestStageNumbers.Add(Counter);

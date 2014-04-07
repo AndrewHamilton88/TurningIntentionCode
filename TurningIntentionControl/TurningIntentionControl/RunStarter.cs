@@ -50,7 +50,7 @@ namespace ParamincsSNMPcontrol
 
     }
 
-    public class StartHighBid : RunStarter
+    /*public class StartHighBid : RunStarter
     {
         public StartHighBid(string ipIn, int prtIn, FileInfo ConfigFile)
             : base(ipIn, prtIn)
@@ -133,5 +133,5 @@ namespace ParamincsSNMPcontrol
             TestC = new Coordinate(ConfigFile.FullName, St1, IP, port);
         }
 
-    }
+    }*/
 }

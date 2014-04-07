@@ -35,9 +35,6 @@ namespace ParamincsSNMPcontrol
         public string UpstreamAgents;
         public string feedPercentages;
         public int[] TurningMovements = new int[3]; //This contains the number of [0] - Right, [1] - Straight, [2] - Left turns
-        /*public int Left;
-        public int Straight;
-        public int Right;*/
 
         public Strategies.Bid LaneBid;
 
@@ -84,82 +81,15 @@ namespace ParamincsSNMPcontrol
             return (maxLen + maxOff - minOff);
         }
 
-        //*Function to get vehicle data from the database.
-        /*public void PullDataAtTime(int ToD)
-        {
-            SpeedList.Clear();
-            DistList.Clear();
-            AvSpeed = 0;
-            AvDist = 0;
-            Count = 0;
-            Left = 0;
-            Straight = 0;
-            Right = 0; //AH TODO
-
-            TimeSpan TS = new TimeSpan(0, 0, ToD / 100);
-            string TimeOfDay = TS.ToString();
-
-            foreach (BitOfRoad BoR in RoadSegments)
-            {
-                string ConditionLine = "AtTime = '" + TimeOfDay + "' AND";
-                ConditionLine += " OnLink = '" + BoR.StartNode + ":" + BoR.EndNode + "' AND ";
-                ConditionLine += "LaneNum = " + BoR.LaneNum;
-                List<double[]> SpeedDist = NetDat.PDB.GetSpeedAndDistane(ConditionLine);
-
-                foreach (double[] SD in SpeedDist)
-                {
-                    AvSpeed += SD[0];
-                    AvDist += SD[1] + BoR.Offset;
-                    Count++;
-                    SpeedList.Add(SD[0]);
-                    DistList.Add(SD[1] + BoR.Offset);
-                }
-                List<string[]> NextAndNextNextTurns = NetDat.PDB.GetTurningDirections(ConditionLine); //AH editted
-                foreach (string[] Turns in NextAndNextNextTurns) //string[0] is the NextTurn, and string[1] is the NextNextTurn
-                {
-                    if (Turns[0] == "Left")
-                    {
-                        Left++;
-                    }
-                    if (Turns[0] == "Straight")
-                    {
-                        Straight++;
-                    }
-                    if (Turns[0] == "Right")
-                    {
-                        Right++;
-                    }
-                    //Console.WriteLine("Next: " + Turns[0] + " NextNext: " + Turns[1]);
-                    
-                }
-            }
-            Console.WriteLine("Left " + Convert.ToString(Left));
-            Console.WriteLine("Straight " + Convert.ToString(Straight));
-            Console.WriteLine("Right " + Convert.ToString(Right));
-            Console.Read();        //AH NextTurn and NextNextTurn
-            
-            if (Count != 0)
-            {
-                AvSpeed = AvSpeed / Count;
-                AvDist = AvDist / Count;
-            }
-        }*/
-
-        //Function to get vehicle data from the database - AH editted the above function to include turning intention
+        //Function to get vehicle data from the database - AH editted the function at bottom of class to include turning intention
         public void PopulateAgentData(int ToD)
         {
             SpeedList.Clear();
             DistList.Clear();
-            /*AvSpeed = 0;
-            AvDist = 0;
-            Count = 0;*/
             AvSpeedTurns[0] = 0.0; AvSpeedTurns[1] = 0.0; AvSpeedTurns[2] = 0.0;        //[0] = Right, [1] = Straight, [2] = Left
             AvDistTurns[0] = 0.0; AvDistTurns[1] = 0.0; AvDistTurns[2] = 0.0;
             TurningMovements[0] = 0; TurningMovements[1] = 0; TurningMovements[2] = 0;
             CountTurns[0] = 0; CountTurns[1] = 0; CountTurns[2] = 0;
-            /*Left = 0;
-            Straight = 0;
-            Right = 0; //AH TODO*/
 
             TimeSpan TS = new TimeSpan(0, 0, ToD / 100);
             string TimeOfDay = TS.ToString();
@@ -198,35 +128,6 @@ namespace ParamincsSNMPcontrol
                     AvDistTurns[i] = AvDistTurns[i] / CountTurns[i];
                 }
             }
-
-                /*List<string[]> NextAndNextNextTurns = NetDat.PDB.GetTurningDirections(ConditionLine); //AH editted
-                foreach (string[] Turns in NextAndNextNextTurns) //string[0] is the NextTurn, and string[1] is the NextNextTurn
-                {
-                    if (Turns[0] == "Left")
-                    {
-                        Left++;
-                    }
-                    if (Turns[0] == "Straight")
-                    {
-                        Straight++;
-                    }
-                    if (Turns[0] == "Right")
-                    {
-                        Right++;
-                    }
-                    //Console.WriteLine("Next: " + Turns[0] + " NextNext: " + Turns[1]);
-
-                }*/
-            //}
-            /*TurningMovements[0] = Left;
-            TurningMovements[1] = Straight;
-            TurningMovements[2] = Right;*/
-            /*Console.WriteLine("Left " + Convert.ToString(Left));
-            Console.WriteLine("Straight " + Convert.ToString(Straight));
-            Console.WriteLine("Right " + Convert.ToString(Right));*/
-            //Console.Read();       //AH NextTurn and NextNextTurn
-
-
         }
 
         //Function to generate a bid
@@ -397,6 +298,67 @@ namespace ParamincsSNMPcontrol
             //WriteBidsDataBase(ToD);
             //WriteSITDataBase(ToD);
         }
+
+        //*Function to get vehicle data from the database.
+        /*public void PullDataAtTime(int ToD)
+        {
+            SpeedList.Clear();
+            DistList.Clear();
+            AvSpeed = 0;
+            AvDist = 0;
+            Count = 0;
+            Left = 0;
+            Straight = 0;
+            Right = 0; //AH TODO
+
+            TimeSpan TS = new TimeSpan(0, 0, ToD / 100);
+            string TimeOfDay = TS.ToString();
+
+            foreach (BitOfRoad BoR in RoadSegments)
+            {
+                string ConditionLine = "AtTime = '" + TimeOfDay + "' AND";
+                ConditionLine += " OnLink = '" + BoR.StartNode + ":" + BoR.EndNode + "' AND ";
+                ConditionLine += "LaneNum = " + BoR.LaneNum;
+                List<double[]> SpeedDist = NetDat.PDB.GetSpeedAndDistane(ConditionLine);
+
+                foreach (double[] SD in SpeedDist)
+                {
+                    AvSpeed += SD[0];
+                    AvDist += SD[1] + BoR.Offset;
+                    Count++;
+                    SpeedList.Add(SD[0]);
+                    DistList.Add(SD[1] + BoR.Offset);
+                }
+                List<string[]> NextAndNextNextTurns = NetDat.PDB.GetTurningDirections(ConditionLine); //AH editted
+                foreach (string[] Turns in NextAndNextNextTurns) //string[0] is the NextTurn, and string[1] is the NextNextTurn
+                {
+                    if (Turns[0] == "Left")
+                    {
+                        Left++;
+                    }
+                    if (Turns[0] == "Straight")
+                    {
+                        Straight++;
+                    }
+                    if (Turns[0] == "Right")
+                    {
+                        Right++;
+                    }
+                    //Console.WriteLine("Next: " + Turns[0] + " NextNext: " + Turns[1]);
+                    
+                }
+            }
+            Console.WriteLine("Left " + Convert.ToString(Left));
+            Console.WriteLine("Straight " + Convert.ToString(Straight));
+            Console.WriteLine("Right " + Convert.ToString(Right));
+            Console.Read();        //AH NextTurn and NextNextTurn
+            
+            if (Count != 0)
+            {
+                AvSpeed = AvSpeed / Count;
+                AvDist = AvDist / Count;
+            }
+        }*/
 
         /*public string BuildLifetimeCondition(string ToD)
 {
