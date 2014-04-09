@@ -23,8 +23,8 @@ namespace ParamincsSNMPcontrol
     {
         //*class members
         public List<BitOfRoad> RoadSegments = new List<BitOfRoad>();
-        public List<double> SpeedList = new List<double>();
-        public List<double> DistList = new List<double>();
+        //public List<double> SpeedList = new List<double>();
+        //public List<double> DistList = new List<double>();
         public double AvSpeed;
         public double[] AvSpeedTurns = new double[3];
         public double AvDist;
@@ -35,6 +35,7 @@ namespace ParamincsSNMPcontrol
         public string UpstreamAgents;
         public string feedPercentages;
         public int[] TurningMovements = new int[3]; //This contains the number of [0] - Right, [1] - Straight, [2] - Left turns
+        public double[,] RoadState;                 //This gets initialized in the PopulateAgentData function to ensure it starts with a blank array each time
 
         public Strategies.Bid LaneBid;
 
@@ -84,8 +85,9 @@ namespace ParamincsSNMPcontrol
         //Function to get vehicle data from the database - AH editted the function at bottom of class to include turning intention
         public void PopulateAgentData(int ToD)
         {
-            SpeedList.Clear();
-            DistList.Clear();
+            //SpeedList.Clear();
+            //DistList.Clear();
+            RoadState = new double[3, 3];               //For each bit of the road [[0] - Right, [1] - Straight, [2] - Left], there will be a road state of [Queue Length, Arrival Rate, Discharge Rate]
             AvSpeedTurns[0] = 0.0; AvSpeedTurns[1] = 0.0; AvSpeedTurns[2] = 0.0;        //[0] = Right, [1] = Straight, [2] = Left
             AvDistTurns[0] = 0.0; AvDistTurns[1] = 0.0; AvDistTurns[2] = 0.0;
             TurningMovements[0] = 0; TurningMovements[1] = 0; TurningMovements[2] = 0;
@@ -107,19 +109,29 @@ namespace ParamincsSNMPcontrol
 
                 for (int i = 0; i < 3; i++)
                 {
-                    List<double[]> SpeedDist = NetDat.PDB.GetSpeedAndDistane(ConditionLine + Directions[i] + "'");
+                    List<double[]> SpeedDist = NetDat.PDB.GetSpeedAndDistane(ConditionLine + Directions[i] + "'");      //This returns the vehicles sorted from closest vehicle to farthest
+                    
 
                     foreach (double[] SD in SpeedDist)
                     {
                         AvSpeedTurns[i] += SD[0];
                         AvDistTurns[i] += SD[1] + BoR.Offset;
                         CountTurns[i]++;
-                        SpeedList.Add(SD[0]);
-                        DistList.Add(SD[1] + BoR.Offset);
+                        if (SD[1] <= 50 + BoR.Offset)   //If the vehicle's distance from the junction is less than 50m
+                        {
+                            RoadState[i, 0]++;          //Add one to the vehicle queue length for that turning movement
+                        }
+                        else
+                        {
+                            RoadState[i, 1]++;          //Add one to the vehicle arrival rate for that turning movement
+                        }
+                        //SpeedList.Add(SD[0]);
+                        //DistList.Add(SD[1] + BoR.Offset);
                     }
-                    TurningMovements[i] =+ CountTurns[i];
+                    TurningMovements[i] = CountTurns[i];               // AH changed the code to have a "=" instead of "=+" to reduce any potential confusion (Count turns updates as you cycle through the database - checked on 08/04/14)
                 }
             }
+
             for (int i = 0; i < 3; i++)
             {
                 if (CountTurns[i] != 0)
@@ -127,13 +139,12 @@ namespace ParamincsSNMPcontrol
                     AvSpeedTurns[i] = AvSpeedTurns[i] / CountTurns[i];
                     AvDistTurns[i] = AvDistTurns[i] / CountTurns[i];
                 }
+                RoadState[i, 1] = RoadState[i, 1] * 2.7 / 120;        //Assume a weighting of '2.7' for the number of vehicles likely to arrive within 120 seconds (so any vehicle visible currently is assumed to arrive within 45 seconds - ie. 120/45 = 2.7)
             }
-        }
+            RoadState[0, 2] = 0.46;             //These are the pcu discharge rates for straight movements and unopposed turning movements from TAL 1/06 (British guidelines)
+            RoadState[1, 2] = 0.53;
+            RoadState[2, 2] = 0.46;
 
-        //Function to generate a bid
-        public void GenerateBid()
-        {
-            Strat.ProcessLane(this);
         }
 
         //Function to generate a bid
@@ -175,6 +186,7 @@ namespace ParamincsSNMPcontrol
         public List<double> Weights = new List<double>();
         public List<double> LanePhases = new List<double>();
         public Strategies.Bid StageBid;
+        public double[,] RoadStates = new double[3, 3];          //This makes the assumption that there is only one lane!
 
         //*Constructor
         public StageAgent(NetworkData A, Strategies B) : base(A, B) { }
@@ -186,6 +198,7 @@ namespace ParamincsSNMPcontrol
             {
                 LA.PopulateAgentData(ToD);  //AH's function
                 LA.GenerateBidTurns();  //AH's function
+                
                 //LA.PullDataAtTime(ToD);    //SB's original function
                 //LA.GenerateBid();          //SB's original function
             }
@@ -210,9 +223,10 @@ namespace ParamincsSNMPcontrol
         public List<double> AllPhases = new List<double>();
         public int NoOfStages;
         public int NextStage;
+        public List<double[,]> AllRoadStates = new List<double[,]>();
 
         //*Class Constructor
-        public JunctionAgent(NetworkData A, Strategies B, string SN, int NoS)  //AH LOOK INTO
+        public JunctionAgent(NetworkData A, Strategies B, string SN, int NoS)  
             : base(A, B)
         {
 
@@ -298,6 +312,14 @@ namespace ParamincsSNMPcontrol
             //WriteBidsDataBase(ToD);
             //WriteSITDataBase(ToD);
         }
+
+
+
+        //Function to generate a bid
+        /*public void GenerateBid()
+        {
+            Strat.ProcessLane(this);
+        }*/
 
         //*Function to get vehicle data from the database.
         /*public void PullDataAtTime(int ToD)

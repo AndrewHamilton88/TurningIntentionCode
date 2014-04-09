@@ -50,8 +50,8 @@ namespace ParamincsSNMPcontrol
 
             try
             {
-                //ParaESVstarter StartParamicsModel = new ParaESVstarter(TestC.ParamicsPath);
-                ParaBSMstarter StartParamicsModel = new ParaBSMstarter(TestC.ParamicsPath);
+                ParaESVstarter StartParamicsModel = new ParaESVstarter(TestC.ParamicsPath);
+                //ParaBSMstarter StartParamicsModel = new ParaBSMstarter(TestC.ParamicsPath);
                 StartParamicsModel.LauncParamics();
 
 

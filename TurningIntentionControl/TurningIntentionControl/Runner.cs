@@ -40,7 +40,7 @@ namespace ParamincsSNMPcontrol
         public void SynchRun(int Duration)
         {
             int SynchDelay = 1000;
-            Connector.PCont.SetModelSyncTrapRate(ref SynchDelay);
+            //Connector.PCont.SetModelSyncTrapRate(ref SynchDelay);     //AH moved this to within the 'do' loop to ensure we can vary the time
 
             Connector.PCont.OnSynch += new __PController_OnSynchEventHandler(PCont_OnSynch);
 
@@ -58,12 +58,13 @@ namespace ParamincsSNMPcontrol
             PreviousStage[0] = 1;
             do
             {
+                Connector.PCont.SetModelSyncTrapRate(ref SynchDelay);
                 SynchDone = false;
                 Connector.PCont.SimRunAndLogAndPause();
                 while (SynchDone == false) ;
                 Thread.Sleep(1000);//TODO This is to give paramics time to save the snapfile should make this explicit in the future
           
-
+                //This function needs to be editted to be able to use a cycle plan rather than a single stage number...
                 int[] Jstages = Processor.EvaluationProcess(ModelTimeofDay, PreviousStage);  //AH this is where the next stage is determined for each junction
 
                 for (int i = 0; i < Jstages.Length; i++)
@@ -80,6 +81,7 @@ namespace ParamincsSNMPcontrol
                     ExitSim = true;
                 }
                 iterations++;
+                //SynchDelay += 100;            //AH tested this to vary the SynchDelay dynamically which works for the C# model, but the snapshot files do not link up with the Time of Day function anymore
 
             } while (ExitSim == false);
             //Connector.PCont.Disconnect();

@@ -54,9 +54,16 @@ namespace ParamincsSNMPcontrol
                 for (int j = 0; j < 3; j++)
                 {
                     SA.LanePhases.Add(SA.Lanes[i].LaneBid.TurningBids[j]);         //AH - Not considering Weights
+                    for (int k = 0; k < 3; k++)
+                    {
+                        SA.RoadStates[j, k] = SA.Lanes[i].RoadState[j, k];          //This makes the assumption that there is only one lane!
+                    }
                 }
                 //pBid += SA.Lanes[i].LaneBid.Scalar * SA.Weights[i];    
             }
+
+
+
             //B.Scalar = pBid;
             //Console.WriteLine(pBid);
             //SA.StageBid = B;
