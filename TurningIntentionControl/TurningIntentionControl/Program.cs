@@ -50,15 +50,15 @@ namespace ParamincsSNMPcontrol
 
             try
             {
-                ParaESVstarter StartParamicsModel = new ParaESVstarter(TestC.ParamicsPath);
-                //ParaBSMstarter StartParamicsModel = new ParaBSMstarter(TestC.ParamicsPath);
+                //ParaESVstarter StartParamicsModel = new ParaESVstarter(TestC.ParamicsPath);
+                ParaBSMstarter StartParamicsModel = new ParaBSMstarter(TestC.ParamicsPath);
                 StartParamicsModel.LauncParamics();
 
 
                 TestC.ConnectToParamics();
                 Runner Run = new Runner(TestC);
 
-                Run.SynchRun(1439);
+                Run.SynchRun(119);
 
             }
             catch (Exception e)

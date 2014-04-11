@@ -65,7 +65,7 @@ namespace ParamincsSNMPcontrol
         }
 
         //function
-        public virtual int[] EvaluationProcess(int ModelTimeofDay, int[] PreviousStage)
+        public virtual List<int[]> EvaluationProcess(int ModelTimeofDay, int[] PreviousStage)
         {
             TimeSpan TS = new TimeSpan(0, 0, ModelTimeofDay / 100);
             string TimeOfDay = TS.ToString();
@@ -284,7 +284,7 @@ namespace ParamincsSNMPcontrol
         }
 
         //function
-        public override int[] EvaluationProcess(int ModelTimeofDay, int[] PreviousStage)
+        /*public override int[] EvaluationProcess(int ModelTimeofDay, int[] PreviousStage)
         {
             TimeSpan TS = new TimeSpan(0, 0, ModelTimeofDay / 100);
             string TimeOfDay = TS.ToString();
@@ -432,14 +432,14 @@ namespace ParamincsSNMPcontrol
                 }
             }*/
             //*********************************************************************************/
-            SitB.PullSensorData(ModelTimeofDay);
+            /*SitB.PullSensorData(ModelTimeofDay);
             SitB.StateUpdate(ModelTimeofDay, NetDat2);
             //writeSITdiffFiles(MainZone,SitB,@"Z:\visualizationBuffer");
 
 
 
             return (MainZone.NextStages);
-        }
+        }*/
 
         private void WriteSITDataBase(int ToD, ref ZoneAgent ZoneIn, NetworkDataSIT NDin)
         {

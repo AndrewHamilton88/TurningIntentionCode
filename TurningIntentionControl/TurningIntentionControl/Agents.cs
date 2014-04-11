@@ -222,7 +222,7 @@ namespace ParamincsSNMPcontrol
         public string SignalNode;
         public List<double> AllPhases = new List<double>();
         public int NoOfStages;
-        public int NextStage;
+        public List<int[]> NextStage = new List<int[]>();
         public List<double[,]> AllRoadStates = new List<double[,]>();
 
         //*Class Constructor
@@ -232,7 +232,11 @@ namespace ParamincsSNMPcontrol
 
             SignalNode = SN;
             NoOfStages = NoS;
-            NextStage = 1;
+
+            int[] TempDummy = new int[2];       //Note that this is the initial stage and stage length assumption
+            TempDummy[0] = 1;
+            TempDummy[1] = 10;
+            NextStage.Add(TempDummy);
         }
 
         //*Function for mediating the auction
@@ -291,7 +295,7 @@ namespace ParamincsSNMPcontrol
     {
         //**Class Members
         public List<JunctionAgent> Junctions = new List<JunctionAgent>();
-        public int[] NextStages;
+        public List<int[]> NextStages;
 
 
         //Constructor

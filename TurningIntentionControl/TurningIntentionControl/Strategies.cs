@@ -25,6 +25,7 @@ namespace ParamincsSNMPcontrol
 
     }
 
+
     //*Basic Strategy
     public class BasicStrategy : Strategies
     {
@@ -71,11 +72,16 @@ namespace ParamincsSNMPcontrol
         public override void ProcessJunction(JunctionAgent JA, int[] PreviousStage)
         {
             //test that number of stages and agents match
+            JA.AllRoadStates.Clear();
             if (JA.Stages.Count != JA.NoOfStages)
             {
                 throw (new Exception("The number of stages does not match the number of agents"));
             }
 
+            for (int i = 0; i < JA.Stages.Count; i++)
+            {
+                JA.AllRoadStates.Add(JA.Stages[i].RoadStates);
+            }
 
             int WinningStage = 1;
 
@@ -85,14 +91,38 @@ namespace ParamincsSNMPcontrol
 
             //Number of Stages - Reads a file to generate stage list
             //AllPossibleStages = AS.ReturnAllCrossroadStages();
-            AllPossibleStages = AS.StagesGenerator(@"OptimalCrossroad17Stages.txt");   //This is for the 17 stage option
+            //AllPossibleStages = AS.StagesGenerator(@"OptimalCrossroad17Stages.txt");   //This is for the 17 stage option
             //AllPossibleStages = AS.StagesGenerator(@"OptimalCrossroad16Stages.txt");   //This is for the 16 stage option
             //AllPossibleStages = AS.StagesGenerator(@"OptimalCrossroad12Stages.txt");   //This is for the 12 stage option
             //AllPossibleStages = AS.StagesGenerator(@"OptimalCrossroad8Stages.txt");   //This is for the 8 stage option
             //Console.WriteLine(PreviousStage);
+
+            //Four stage road state model [Stage1RoadState, State2RoadState...]
+            List<double[]> FourStageRoadStates = new List<double[]>();
+            FourStageRoadStates = ReturnFourStageSolution(JA.AllRoadStates);
+
+            //12 Phase road state model [Phase1RoadState, Phase2RoadState...]
+            //List<double[]> TwelvePhaseRoadStates = new List<double[]>();
+            //TwelvePhaseRoadStates = Return12PhaseRoadState(JA.AllRoadStates);
+
+            List<int[]> CyclePlan = new List<int[]>();
+            CyclePlan.Clear();
+
+            FixedVariables FV = new FixedVariables();
+            RunnerCyclePlan RunCyclePlan = new RunnerCyclePlan();
+
+            CyclePlan = RunCyclePlan.RunAlgorithm(FV.StartingSeeds, FV.StepsClimbed, FV.MutationsAroundAPoint, FourStageRoadStates);
+
+            List<int[]> FinalAnswer = new List<int[]>();        //This is to remove the (99,5) Intergreen Phase
+            FinalAnswer.Clear();
+
+            FinalAnswer = ReturnCyclePlan(CyclePlan);
+
+            JA.NextStage = FinalAnswer;
             
-            
-            int LastStage = 2;
+
+            //This all works for the highbid model...
+            /*int LastStage = 2;
             LastStage = PreviousStage[0];
 
             //Stage Choice - Select the 'logic' for choosing the best stage
@@ -100,6 +130,15 @@ namespace ParamincsSNMPcontrol
             //WinningStage = AS.WithinXPercentStage(AllPossibleStages, JA.AllPhases, LastStage, 15.0);   //This is for the within "X" percent bid
 
             WinningStage = AS.SimpleHighestStage(AllPossibleStages, JA.AllPhases);                   //This is for the basic highest bid
+            
+            List<int[]> Answer = new List<int[]>();
+            int[] SingleStage = new int[2];
+            int StageLength = 10;
+            SingleStage[0] = WinningStage;
+            SingleStage[1] = StageLength;
+            Answer.Add(SingleStage);
+
+            JA.NextStage = Answer;
 
             /*int Stage = 1;
             double BidHolder = 0;
@@ -114,7 +153,7 @@ namespace ParamincsSNMPcontrol
                 Stage++;
             }*/
 
-            JA.NextStage = WinningStage;
+            //JA.NextStage = WinningStage;*/
         }
         public override void ProcessZone(ZoneAgent ZA,int ToD, int[] PreviousStage)
         {
@@ -123,12 +162,67 @@ namespace ParamincsSNMPcontrol
 
         private void GreedyNextStages(ZoneAgent ZA)
         {
-            int[] NextStages = new int[ZA.Junctions.Count];
+            //int[] NextStages = new int[ZA.Junctions.Count];
+            List<int[]> NextStages = new List<int[]>();     //Note that I have removed ZA.Junctions.Count!!!
+            
             for (int i = 0; i < ZA.Junctions.Count; i++)
             {
-                NextStages[i] = ZA.Junctions[i].NextStage;
+                NextStages = ZA.Junctions[i].NextStage;
             }
             ZA.NextStages = NextStages;
+        }
+
+        private List<double[]> ReturnFourStageSolution(List<double[,]> AllRoadStates)
+        {
+            List<double[]> Answer = new List<double[]>();
+
+            foreach (double[,] Stage in AllRoadStates)
+            {
+                double[] TempAnswer = new double[3];
+                TempAnswer[0] = Stage[0, 0] + Stage[1, 0] + Stage[2, 0];          //Queue length is the sum of all queues
+                TempAnswer[1] = Stage[0, 1] + Stage[1, 1] + Stage[2, 1];          //Arrival rate is the sum of all arrivals
+                TempAnswer[2] = Stage[0, 2] + Stage[1, 2] + Stage[2, 2];        //Discharge rate is the sum of all discharges if there are 3 lanes
+                Answer.Add(TempAnswer);
+            }
+            return Answer;
+        }
+
+        private List<double[]> Return12PhaseRoadState(List<double[,]> AllRoadStates)
+        {
+            List<double[]> Answer = new List<double[]>();
+
+            foreach (double[,] Stage in AllRoadStates)
+            {
+                double[] TempAnswer1 = new double[3];
+                double[] TempAnswer2 = new double[3];
+                double[] TempAnswer3 = new double[3];
+                TempAnswer1[0] = Stage[0, 0];          //Queue length is the sum of all queues
+                TempAnswer1[1] = Stage[0, 1];          //Arrival rate is the sum of all arrivals
+                TempAnswer1[2] = Stage[0, 2];        //Discharge rate is the sum of all discharges if there are 3 lanes
+                TempAnswer2[0] = Stage[1, 0];          //Queue length is the sum of all queues
+                TempAnswer2[1] = Stage[1, 1];          //Arrival rate is the sum of all arrivals
+                TempAnswer2[2] = Stage[1, 2];        //Discharge rate is the sum of all discharges if there are 3 lanes
+                TempAnswer3[0] = Stage[2, 0];          //Queue length is the sum of all queues
+                TempAnswer3[1] = Stage[2, 1];          //Arrival rate is the sum of all arrivals
+                TempAnswer3[2] = Stage[2, 2];        //Discharge rate is the sum of all discharges if there are 3 lanes
+                Answer.Add(TempAnswer1);
+                Answer.Add(TempAnswer2);
+                Answer.Add(TempAnswer3);
+            }
+            return Answer;
+        }
+
+        private List<int[]> ReturnCyclePlan(List<int[]> CyclePlan)
+        {
+            List<int[]> Answer = new List<int[]>();
+            for (int i = 0; i < CyclePlan.Count; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    Answer.Add(CyclePlan[i]);
+                }
+            }
+            return Answer;
         }
     }
 

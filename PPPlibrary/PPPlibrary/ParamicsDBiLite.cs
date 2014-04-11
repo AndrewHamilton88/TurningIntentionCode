@@ -242,7 +242,7 @@ namespace ParamicsPuppetMaster
             }
             for (int i = 1; i <= JcnNum; i++)
             {
-                BuildBidDataTab += ", Stage" + i.ToString() + " INT";
+                BuildBidDataTab += ", Stage" + i.ToString() + " VARCHAR(50)";
             }
             BuildBidDataTab += ",VehicleCount INT, TotalLifeSpan  DOUBLE";
             BuildBidDataTab += ", PRIMARY KEY (AtTime)); ";
@@ -256,11 +256,12 @@ namespace ParamicsPuppetMaster
         }
 
         //*Function to add bid data to the database
-        public void AddBidLine(string Time, double[] Bids, int[] Decisions, int Vcount, double LifeSpan)
+        public void AddBidLine(string Time, double[] Bids, List<int[]> Decisions, int Vcount, double LifeSpan)
         {
             //Check that the dimensions of the arrays match the database colums
-            if (Bids.Length != ANum || Decisions.Length != JNum)                            //AH cheated by multiplying the ANum by 3 so that it could record all 12 phase bids instead of stage bids
-            {
+            //if (Bids.Length != ANum || Decisions.Count != JNum)                            //AH cheated by multiplying the ANum by 3 so that it could record all 12 phase bids instead of stage bids
+            if (Bids.Length != ANum)
+            {                                                                               //09/04/14 NOTE that AH changed the Decisions.Length to .Count to adapt to the new List<int[]> - if intergreen is included in this list then .count will need to be halved
                 throw new Exception("The line you are trying to add to the database doesn't match the number of colums");
             }
 
@@ -269,11 +270,13 @@ namespace ParamicsPuppetMaster
             {
                 TheLine += ", " + d.ToString();
             }
-            foreach (int i in Decisions)
+            TheLine += ", '";
+            foreach (int[] i in Decisions)          //AH changed this from int to int[] and it only stores the stage number...but will print out all of the stage numbers in that list in one go
             {
-                TheLine += ", " + i.ToString();
+                //TheLine += ", " + i[0].ToString();
+                TheLine += i[0].ToString() + ":" + i[1].ToString() + "x";
             }
-            TheLine += ", " + Vcount.ToString();
+            TheLine += "', " + Vcount.ToString();
             TheLine += ", " + LifeSpan.ToString();
             TheLine += ");";
 

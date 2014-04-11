@@ -68,7 +68,7 @@ namespace ParamincsSNMPcontrol
             }
         }
         //*Function for recording the decision data
-        public void RecordDecision(string Time, double[] bids, int[] decisions, int Vcount, double LifeSpan)
+        public void RecordDecision(string Time, double[] bids, List<int[]> decisions, int Vcount, double LifeSpan)
         {
 
             BDT.AddBidLine(Time, bids, decisions, Vcount, LifeSpan);
