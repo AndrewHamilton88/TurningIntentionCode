@@ -16,6 +16,7 @@ namespace ParamincsSNMPcontrol
         int MaximumGreenTime = FixedVariables.MaximumGreenTime;
         int IntergreenStageNumber = FixedVariables.IntergreenStageNumber;
         static int MaxCycleTime = FixedVariables.MaxCycleTime;
+        int NumberOfPhases = FixedVariables.NumberOfPhases;
 
         List<int[]> InitialCyclePlanList = new List<int[]>();
         Random RandomGenerator = new Random();
@@ -58,7 +59,7 @@ namespace ParamincsSNMPcontrol
             return RandomGenerator.Next(1, NumberOfStages + 1);   //This returns a random stage number
         }
 
-        public bool AllowableCyclePlan(List<int[]> CyclePlan)
+        public bool AllowableCyclePlanStages(List<int[]> CyclePlan)
         {
             List<int> ListOfStages = new List<int>();
             foreach (int[] Stage in CyclePlan)
@@ -82,6 +83,42 @@ namespace ParamincsSNMPcontrol
                 return true;
             }
             return false;
+        }
+
+        public bool AllowableCyclePlanPhases(List<int[]> CyclePlan, List<int[]> PhaseList)        //This ensures that every phase has been called
+        {
+            List<int> ListOfStages = new List<int>();           //This is a list of stages called during the given cycle plan
+            List<int> ListOfPhases = new List<int>();           //This is a list of phases called during the given cycle plan
+            foreach (int[] Stage in CyclePlan)
+            {
+                if (Stage[0] != IntergreenStageNumber)
+                {
+                    if (!ListOfStages.Contains(Stage[0]))
+                    {
+                        ListOfStages.Add(Stage[0]);
+                    }
+                }
+            }
+
+            foreach (int Stage in ListOfStages)
+            {
+                foreach (int Phase in PhaseList[Stage - 1])      //This looks through each stage in the ListOfStages and adds the corresponding phases
+                {
+                    if (!ListOfPhases.Contains(Phase))
+                    {
+                        ListOfPhases.Add(Phase);
+                    }
+                }
+            }
+
+            if (ListOfPhases.Count() == NumberOfPhases)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public List<int[]> MutateCyclePlan(List<int[]> ReceivedCyclePlan)

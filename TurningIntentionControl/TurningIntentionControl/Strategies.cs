@@ -98,12 +98,12 @@ namespace ParamincsSNMPcontrol
             //Console.WriteLine(PreviousStage);
 
             //Four stage road state model [Stage1RoadState, State2RoadState...]
-            List<double[]> FourStageRoadStates = new List<double[]>();
-            FourStageRoadStates = ReturnFourStageSolution(JA.AllRoadStates);
+            //List<double[]> FourStageRoadStates = new List<double[]>();
+            //FourStageRoadStates = ReturnFourStageSolution(JA.AllRoadStates);
 
             //12 Phase road state model [Phase1RoadState, Phase2RoadState...]
-            //List<double[]> TwelvePhaseRoadStates = new List<double[]>();
-            //TwelvePhaseRoadStates = Return12PhaseRoadState(JA.AllRoadStates);
+            List<double[]> TwelvePhaseRoadStates = new List<double[]>();
+            TwelvePhaseRoadStates = Return12PhaseRoadState(JA.AllRoadStates);
 
             List<int[]> CyclePlan = new List<int[]>();
             CyclePlan.Clear();
@@ -111,7 +111,15 @@ namespace ParamincsSNMPcontrol
             FixedVariables FV = new FixedVariables();
             RunnerCyclePlan RunCyclePlan = new RunnerCyclePlan();
 
-            CyclePlan = RunCyclePlan.RunAlgorithm(FV.StartingSeeds, FV.StepsClimbed, FV.MutationsAroundAPoint, FourStageRoadStates);
+            //4 Stage Model
+            //CyclePlan = RunCyclePlan.RunAlgorithm(FV.StartingSeeds, FV.StepsClimbed, FV.MutationsAroundAPoint, TwelvePhaseRoadStates, RunCyclePlan.PopulatePhasesFourStageModel());
+            
+            //8 Stage Model
+            CyclePlan = RunCyclePlan.RunAlgorithm(FV.StartingSeeds, FV.StepsClimbed, FV.MutationsAroundAPoint, TwelvePhaseRoadStates, RunCyclePlan.PopulatePhasesEightStageModel());
+
+            //17 Stage Model
+            //CyclePlan = RunCyclePlan.RunAlgorithm(FV.StartingSeeds, FV.StepsClimbed, FV.MutationsAroundAPoint, TwelvePhaseRoadStates, RunCyclePlan.PopulatePhasesSeventeenStageModel());
+
 
             List<int[]> FinalAnswer = new List<int[]>();        //This is to remove the (99,5) Intergreen Phase
             FinalAnswer.Clear();

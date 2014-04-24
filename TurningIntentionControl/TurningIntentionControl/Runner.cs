@@ -51,7 +51,7 @@ namespace ParamincsSNMPcontrol
             {
                 LastStageList[i] = 1;
             }*/
-
+            
             
             int iterations = 0;
             int[] PreviousStage = new int[1];

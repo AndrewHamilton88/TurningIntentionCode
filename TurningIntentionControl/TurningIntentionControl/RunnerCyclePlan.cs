@@ -19,16 +19,79 @@ namespace ParamincsSNMPcontrol
         int NumberOfStages = FixedVariables.NumberOfStages;
         int NumberOfTimeSteps = FixedVariables.MaxCycleTime;
 
-        List<double[]> ListOfStages = new List<double[]>();
+        List<double[]> ListOfStagesRoadState = new List<double[]>();
+        List<int[]> ListOfPhases = new List<int[]>();
 
-        public List<double[]> PopulateStages()
+        public List<double[]> PopulateStagesFourStageModel()        //Current Road State for four stage model
         {
-            ListOfStages.Add(FV.Stage1);
-            ListOfStages.Add(FV.Stage2);
-            ListOfStages.Add(FV.Stage3);
-            ListOfStages.Add(FV.Stage4);
-            return ListOfStages;
+            ListOfStagesRoadState.Add(FV.Stage1);
+            ListOfStagesRoadState.Add(FV.Stage2);
+            ListOfStagesRoadState.Add(FV.Stage3);
+            ListOfStagesRoadState.Add(FV.Stage4);
+            return ListOfStagesRoadState;
         }
+
+        public List<int[]> PopulatePhasesFourStageModel()        //The phases which are active when the stage is called
+        {
+            ListOfPhases.Add(FV.Stage1Phases);
+            ListOfPhases.Add(FV.Stage2Phases);
+            ListOfPhases.Add(FV.Stage3Phases);
+            ListOfPhases.Add(FV.Stage4Phases);
+            return ListOfPhases;
+        }
+
+        public List<double[]> Populate12PhasesRoadState()        //Current Road State for all 12 phases
+        {
+            ListOfStagesRoadState.Add(FV.Phase1);
+            ListOfStagesRoadState.Add(FV.Phase2);
+            ListOfStagesRoadState.Add(FV.Phase3);
+            ListOfStagesRoadState.Add(FV.Phase4);
+            ListOfStagesRoadState.Add(FV.Phase5);
+            ListOfStagesRoadState.Add(FV.Phase6);
+            ListOfStagesRoadState.Add(FV.Phase7);
+            ListOfStagesRoadState.Add(FV.Phase8);
+            ListOfStagesRoadState.Add(FV.Phase9);
+            ListOfStagesRoadState.Add(FV.Phase10);
+            ListOfStagesRoadState.Add(FV.Phase11);
+            ListOfStagesRoadState.Add(FV.Phase12);
+            return ListOfStagesRoadState;
+        }
+
+        public List<int[]> PopulatePhasesEightStageModel()        //The phases which are active when the stage is called
+        {
+            ListOfPhases.Add(FV.Stage1Phases8Stage);
+            ListOfPhases.Add(FV.Stage2Phases8Stage);
+            ListOfPhases.Add(FV.Stage3Phases8Stage);
+            ListOfPhases.Add(FV.Stage4Phases8Stage);
+            ListOfPhases.Add(FV.Stage5Phases8Stage);
+            ListOfPhases.Add(FV.Stage6Phases8Stage);
+            ListOfPhases.Add(FV.Stage7Phases8Stage);
+            ListOfPhases.Add(FV.Stage8Phases8Stage);
+            return ListOfPhases;
+        }
+
+        public List<int[]> PopulatePhasesSeventeenStageModel()        //The phases which are active when the stage is called
+        {
+            ListOfPhases.Add(FV.Stage1Phases17Stage);
+            ListOfPhases.Add(FV.Stage2Phases17Stage);
+            ListOfPhases.Add(FV.Stage3Phases17Stage);
+            ListOfPhases.Add(FV.Stage4Phases17Stage);
+            ListOfPhases.Add(FV.Stage5Phases17Stage);
+            ListOfPhases.Add(FV.Stage6Phases17Stage);
+            ListOfPhases.Add(FV.Stage7Phases17Stage);
+            ListOfPhases.Add(FV.Stage8Phases17Stage);
+            ListOfPhases.Add(FV.Stage9Phases17Stage);
+            ListOfPhases.Add(FV.Stage10Phases17Stage);
+            ListOfPhases.Add(FV.Stage11Phases17Stage);
+            ListOfPhases.Add(FV.Stage12Phases17Stage);
+            ListOfPhases.Add(FV.Stage13Phases17Stage);
+            ListOfPhases.Add(FV.Stage14Phases17Stage);
+            ListOfPhases.Add(FV.Stage15Phases17Stage);
+            ListOfPhases.Add(FV.Stage16Phases17Stage);
+            ListOfPhases.Add(FV.Stage17Phases17Stage);
+            return ListOfPhases;
+        }
+
 
         private List<int[]> CopyCyclePlan(List<int[]> CyclePlan)
         {
@@ -56,7 +119,7 @@ namespace ParamincsSNMPcontrol
             return Result;
         }
 
-        public List<int[]> RunAlgorithm(int StartingSeeds, int StepsClimbed, int MutationsAroundAPoint, List<double[]> CurrentRoadState)
+        public List<int[]> RunAlgorithm(int StartingSeeds, int StepsClimbed, int MutationsAroundAPoint, List<double[]> CurrentRoadState, List<int[]> PhaseList)
         {
             //List<double[]> CurrentRoadState = PopulateStages();
             List<int[]> BestCyclePlan = new List<int[]>();
@@ -75,12 +138,13 @@ namespace ParamincsSNMPcontrol
                 while (AllowableInitialCyclePlan == false)
                 {
                     CyclePlan = IG.GenerateCyclePlan();     //This is generates a new starting point - the initial seed
-                    AllowableInitialCyclePlan = MU.AllowableCyclePlan(CyclePlan);
+                    AllowableInitialCyclePlan = MU.AllowableCyclePlanPhases(CyclePlan, PhaseList);
+                    //AllowableInitialCyclePlan = MU.AllowableCyclePlanStages(CyclePlan);
                 }
                 
                 //System.Threading.Thread.Sleep(50);
 
-                double InitialDelay = FF.RunnerFunction(CyclePlan, LeastDelay, CurrentRoadState);
+                double InitialDelay = FF.RunnerFunction(CyclePlan, LeastDelay, CurrentRoadState, PhaseList);
                 if (InitialDelay < LeastDelay)                                          //This just checks to see if the initial seed is the best cycle plan
                 {
                     LeastDelay = InitialDelay;
@@ -116,14 +180,15 @@ namespace ParamincsSNMPcontrol
                     for (int i = 0; i < MutationsAroundAPoint; i++)                                         //This for-loop trials 'y' number of mutations of the current best cycle plan from the current seed (ie. the algorithm will search through the nearest location 'y' times) - it finds the lowest delay around the current plan
                     {
                         TempCyclePlan = MU.MutateCyclePlan(TempBestPlan);
-                        bool IsCyclePlanAllowable = MU.AllowableCyclePlan(TempCyclePlan);
+                        bool IsCyclePlanAllowable = MU.AllowableCyclePlanPhases(TempCyclePlan, PhaseList);
+                        //bool IsCyclePlanAllowable = MU.AllowableCyclePlanStages(TempCyclePlan);
                         if (IsCyclePlanAllowable == false)
                         {
                             continue;
                         }
                         double TempDelayTotal = 0;
 
-                        TempDelayTotal = FF.RunnerFunction(TempCyclePlan, TempMultipleMutationLeastDelay, CurrentRoadState);
+                        TempDelayTotal = FF.RunnerFunction(TempCyclePlan, TempMultipleMutationLeastDelay, CurrentRoadState, PhaseList);
 
                         if (TempDelayTotal < TempMultipleMutationLeastDelay)            //Currently this ignores any stage with the same amount of delay...
                         {

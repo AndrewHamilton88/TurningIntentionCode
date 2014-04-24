@@ -53,7 +53,7 @@ namespace ParamincsSNMPcontrol
         /// <param name="CurrentRoadState"></param>
         /// <param name="PreviousStageNumber"></param>
         /// <returns></returns>
-        public Answer RunAlgorithm(int StartingSeeds, int StepsClimbed, int MutationsAroundAPoint, List<double[]> CurrentRoadState, int PreviousStageNumber)
+        public Answer RunAlgorithm(int StartingSeeds, int StepsClimbed, int MutationsAroundAPoint, List<double[]> CurrentRoadState, int PreviousStageNumber, List<int[]> PhaseList)
         {
             List<int[]> BestCyclePlan = new List<int[]>();
             double LeastDelay = 9999999999;
@@ -69,7 +69,7 @@ namespace ParamincsSNMPcontrol
                 int InitialCyclePlanLength = 0;
                 InitialCyclePlanLength = CyclePlanLength(CyclePlan); 
 
-                double InitialDelay = FF.RunnerFunction(CyclePlan, LeastDelay, CurrentRoadState);
+                double InitialDelay = FF.RunnerFunction(CyclePlan, LeastDelay, CurrentRoadState, PhaseList);
                 double InitialDelayPerSecond = InitialDelay / InitialCyclePlanLength;
 
                 if (InitialDelayPerSecond < LeastDelayPerSecond)                                          //This just checks to see if the initial seed is the best cycle plan
@@ -103,7 +103,7 @@ namespace ParamincsSNMPcontrol
                         int TempCycleLength = 0;
                         double TempDelayPerSecond = 0;
 
-                        TempDelayTotal = FF.RunnerFunction(TempCyclePlan, TempMultipleMutationLeastDelay, CurrentRoadState);
+                        TempDelayTotal = FF.RunnerFunction(TempCyclePlan, TempMultipleMutationLeastDelay, CurrentRoadState, PhaseList);
                         TempCycleLength = CyclePlanLength(TempCyclePlan);
                         TempDelayPerSecond = TempDelayTotal / TempCycleLength;
 

@@ -117,7 +117,7 @@ namespace ParamincsSNMPcontrol
                         AvSpeedTurns[i] += SD[0];
                         AvDistTurns[i] += SD[1] + BoR.Offset;
                         CountTurns[i]++;
-                        if (SD[1] <= 50 + BoR.Offset)   //If the vehicle's distance from the junction is less than 50m
+                        if (SD[1] <= 50 + BoR.Offset || SD[0] <= 3)   //If the vehicle's distance from the junction is less than 50m
                         {
                             RoadState[i, 0]++;          //Add one to the vehicle queue length for that turning movement
                         }

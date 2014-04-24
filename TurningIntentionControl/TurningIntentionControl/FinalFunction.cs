@@ -43,7 +43,7 @@ namespace ParamincsSNMPcontrol
             }
         }
 
-        public double RunnerFunction(List<int[]> CyclePlan, double LeastDelay, List<double[]> CurrentRoadState)
+        public double RunnerFunction(List<int[]> CyclePlan, double LeastDelay, List<double[]> CurrentRoadState, List<int[]> PhaseList)
         {
             Performance Perf = new Performance();
             Queue_Lengths Queue = new Queue_Lengths();
@@ -61,9 +61,13 @@ namespace ParamincsSNMPcontrol
                 //if (TempDelayTotal <= LeastDelay)
                 if (true)
                 {
-                    TempDelayTotal += Perf.DelayFunctionOtherStages(Stage[0], Stage[1], TempRoadState, LeastDelay);   //Determines 'off' stages's delay  
-                    TempRoadState = Queue.UpdateQueueLength(Stage[0], Stage[1], TempRoadState);     //Updates current queues
-                    TempDelayTotal += Perf.DelayFunctionCurrentStage(Stage[0], Stage[1], TempRoadState);   //Calculates the delay to the remaining queued vehicles on current stage
+                    /*TempDelayTotal += Perf.DelayFunctionOtherStages(Stage[0], Stage[1], TempRoadState, LeastDelay, PhaseList);   //Determines 'off' stages's delay  
+                    TempRoadState = Queue.UpdateQueueLength(Stage[0], Stage[1], TempRoadState, PhaseList);     //Updates current queues
+                    TempDelayTotal += Perf.DelayFunctionCurrentStage(Stage[0], Stage[1], TempRoadState, PhaseList);   //Calculates the delay to the remaining queued vehicles on current stage*/
+
+                    TempDelayTotal += Perf.DelayFunctionOtherStagesVer2(Stage[0], Stage[1], TempRoadState, LeastDelay, PhaseList);   //Determines 'off' stages's delay  
+                    TempDelayTotal += Perf.DelayFunctionCurrentStageVer2(Stage[0], Stage[1], TempRoadState, PhaseList);   //Calculates the delay to the remaining queued vehicles on current stage
+                    TempRoadState = Queue.UpdateQueueLength(Stage[0], Stage[1], TempRoadState, PhaseList);     //Updates current queues
                 }
                 else
                 {
