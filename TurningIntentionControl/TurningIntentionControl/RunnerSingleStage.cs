@@ -53,7 +53,7 @@ namespace ParamincsSNMPcontrol
         /// <param name="CurrentRoadState"></param>
         /// <param name="PreviousStageNumber"></param>
         /// <returns></returns>
-        public Answer RunAlgorithm(int StartingSeeds, int StepsClimbed, int MutationsAroundAPoint, List<double[]> CurrentRoadState, int PreviousStageNumber, List<int[]> PhaseList)
+        public List<int[]> RunAlgorithm(int StartingSeeds, int StepsClimbed, int MutationsAroundAPoint, List<double[]> CurrentRoadState, int PreviousStageNumber, List<int[]> PhaseList)
         {
             List<int[]> BestCyclePlan = new List<int[]>();
             double LeastDelay = 9999999999;
@@ -78,8 +78,8 @@ namespace ParamincsSNMPcontrol
                     BestCyclePlan = CyclePlan;
                     LeastDelayPerSecond = InitialDelayPerSecond;
                 }
-                Console.WriteLine(InitialDelay);
-                Console.WriteLine(InitialDelayPerSecond);
+                //Console.WriteLine(InitialDelay);
+                //Console.WriteLine(InitialDelayPerSecond);
 
                 List<int[]> TempBestPlan = new List<int[]>();                           //This is for the lowest delay plan after each set of mutations (so after a cycle plan has been mutated, then the best plan out of the set of mutations will be stored here)
                 TempBestPlan = CyclePlan;                           //This uses the initial seed as the current best plan
@@ -99,6 +99,10 @@ namespace ParamincsSNMPcontrol
                     for (int i = 0; i < MutationsAroundAPoint; i++)                                         //This for-loop trials 'y' number of mutations of the current best cycle plan from the current seed (ie. the algorithm will search through the nearest location 'y' times) - it finds the lowest delay around the current plan
                     {
                         TempCyclePlan = MU.MutateCyclePlan(TempBestPlan);
+                        if (TempCyclePlan[0][0] == PreviousStageNumber)
+                        {
+                            continue;
+                        }
                         double TempDelayTotal = 0;
                         int TempCycleLength = 0;
                         double TempDelayPerSecond = 0;
@@ -167,18 +171,18 @@ namespace ParamincsSNMPcontrol
             Returner.Cycleplan = BestCyclePlan;
             Returner.TotalDelayPerSecond = LeastDelayPerSecond;
 
-            Console.WriteLine(Returner.TotalDelay);
-            Console.WriteLine(Returner.TotalDelayPerSecond);
-            foreach (int[] stage in Returner.Cycleplan)
+            //Console.WriteLine(Returner.TotalDelay);
+            //Console.WriteLine(Returner.TotalDelayPerSecond);
+            /*foreach (int[] stage in Returner.Cycleplan)
             {
                 foreach (int item in stage)
                 {
                     Console.Write(item + ",");
                 }
                 Console.WriteLine();
-            }
+            }*/
 
-            return Returner;
+            return Returner.Cycleplan;
         }
 
     }

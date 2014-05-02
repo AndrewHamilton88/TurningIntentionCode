@@ -68,6 +68,17 @@ namespace ParamicsPuppetMaster
             ClearTable.Connection.Close();
         }
 
+        public void SaveLinkturningmovementsTable(int RunNumber, string FileDirectory)
+        {
+            string TheLine = "SELECT * FROM `paramicsdb`.`linkturningmovements` INTO OUTFILE '" + FileDirectory + "//Linkturningmovement" + RunNumber + ".csv' FIELDS TERMINATED BY ',';";
+
+            MySqlCommand AddLine = new MySqlCommand(TheLine, DBconnect);
+
+            AddLine.Connection.Open();
+            AddLine.ExecuteNonQuery();
+            AddLine.Connection.Close();
+        }
+
         //Function for adding a line to ViDTab
         public void VDataAddLine(string[] iDdat)
         {
@@ -286,6 +297,17 @@ namespace ParamicsPuppetMaster
             AddLine.ExecuteNonQuery();
             AddLine.Connection.Close();
 
+        }
+
+        public void SaveBidDataTable(int RunNumber, string FileDirectory)
+        {
+            string TheLine = "SELECT * FROM `paramicsdb`.`biddata` INTO OUTFILE '" + FileDirectory + "//Biddata" + RunNumber +  ".csv' FIELDS TERMINATED BY ',';";
+
+            MySqlCommand AddLine = new MySqlCommand(TheLine, DBconnect);
+
+            AddLine.Connection.Open();
+            AddLine.ExecuteNonQuery();
+            AddLine.Connection.Close();
         }
 
     }

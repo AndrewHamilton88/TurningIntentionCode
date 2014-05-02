@@ -75,6 +75,12 @@ namespace ParamincsSNMPcontrol
 
         }
 
+        public void SaveBothTables(int RunNumber, string FileDirectory)
+        {
+            BDT.SaveBidDataTable(RunNumber, FileDirectory);
+            PDB.SaveLinkturningmovementsTable(RunNumber, FileDirectory);
+        }
+
 
 
     }

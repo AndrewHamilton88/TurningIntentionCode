@@ -54,14 +54,14 @@ namespace ParamincsSNMPcontrol
             PreviousStageNumber = StageNumber;
 
 
-            foreach (int[] StageAndTime in InitialCyclePlanList)
+            /*foreach (int[] StageAndTime in InitialCyclePlanList)
             {
                 foreach (int item in StageAndTime)
                 {
                     Console.Write(item + ",");
                 }
                 Console.WriteLine();
-            }
+            }*/
             //Console.Read();
 
             return InitialCyclePlanList;

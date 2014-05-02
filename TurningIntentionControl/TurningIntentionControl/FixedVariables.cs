@@ -7,11 +7,11 @@ namespace ParamincsSNMPcontrol
 {
     class FixedVariables
     {
-        public int StartingSeeds = 20;
-        public int StepsClimbed = 200;
-        public int MutationsAroundAPoint = 200;
+        public int StartingSeeds = 10;
+        public int StepsClimbed = 50;
+        public int MutationsAroundAPoint = 50;
         
-        public static int NumberOfStages = 8;
+        public static int NumberOfStages = 4;
         public static int NumberOfPhases = 12;
         public static int MinimumGreenTime = 7;
         public static int IntergreenTime = 5;
@@ -75,6 +75,10 @@ namespace ParamincsSNMPcontrol
         public int[] Stage15Phases17Stage = { 3, 6, 8, 9 };
         public int[] Stage16Phases17Stage = { 6, 9, 11, 12 };
         public int[] Stage17Phases17Stage = { 3, 6, 9, 12 };
+
+        //2 Stage Model
+        public int[] Stage1Phases2Stage = { 1, 2, 3, 7, 8, 9 };     //These are the active phases when the corresponding stage is called
+        public int[] Stage2Phases2Stage = { 4, 5, 6, 10, 11, 12 };
         
     }
 }

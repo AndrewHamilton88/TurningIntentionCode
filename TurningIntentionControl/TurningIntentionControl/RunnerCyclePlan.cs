@@ -92,6 +92,13 @@ namespace ParamincsSNMPcontrol
             return ListOfPhases;
         }
 
+        public List<int[]> PopulatePhasesTwoStageModel()        //The phases which are active when the stage is called
+        {
+            ListOfPhases.Add(FV.Stage1Phases2Stage);
+            ListOfPhases.Add(FV.Stage2Phases2Stage);
+            return ListOfPhases;
+        }
+
 
         private List<int[]> CopyCyclePlan(List<int[]> CyclePlan)
         {

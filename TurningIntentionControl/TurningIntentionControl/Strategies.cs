@@ -112,14 +112,31 @@ namespace ParamincsSNMPcontrol
             RunnerCyclePlan RunCyclePlan = new RunnerCyclePlan();
 
             //4 Stage Model
-            //CyclePlan = RunCyclePlan.RunAlgorithm(FV.StartingSeeds, FV.StepsClimbed, FV.MutationsAroundAPoint, TwelvePhaseRoadStates, RunCyclePlan.PopulatePhasesFourStageModel());
+            CyclePlan = RunCyclePlan.RunAlgorithm(FV.StartingSeeds, FV.StepsClimbed, FV.MutationsAroundAPoint, TwelvePhaseRoadStates, RunCyclePlan.PopulatePhasesFourStageModel());
             
             //8 Stage Model
-            CyclePlan = RunCyclePlan.RunAlgorithm(FV.StartingSeeds, FV.StepsClimbed, FV.MutationsAroundAPoint, TwelvePhaseRoadStates, RunCyclePlan.PopulatePhasesEightStageModel());
+            //CyclePlan = RunCyclePlan.RunAlgorithm(FV.StartingSeeds, FV.StepsClimbed, FV.MutationsAroundAPoint, TwelvePhaseRoadStates, RunCyclePlan.PopulatePhasesEightStageModel());
 
             //17 Stage Model
             //CyclePlan = RunCyclePlan.RunAlgorithm(FV.StartingSeeds, FV.StepsClimbed, FV.MutationsAroundAPoint, TwelvePhaseRoadStates, RunCyclePlan.PopulatePhasesSeventeenStageModel());
 
+            //RunnerSingleStage RunSS = new RunnerSingleStage();
+            RunnerAllSingleStageOptions RunAllSS = new RunnerAllSingleStageOptions();
+
+            //8 Stage - Single Stage Selection Model
+            //CyclePlan = RunSS.RunAlgorithm(FV.StartingSeeds, FV.StepsClimbed, FV.MutationsAroundAPoint, TwelvePhaseRoadStates, PreviousStage[0], RunCyclePlan.PopulatePhasesEightStageModel());
+            //CyclePlan = RunAllSS.RunAlgorithm(TwelvePhaseRoadStates, PreviousStage[0], RunCyclePlan.PopulatePhasesEightStageModel());
+
+            //4 Stage - Single Stage Selection Model - All Combinations checked
+            //CyclePlan = RunAllSS.RunAlgorithm(TwelvePhaseRoadStates, PreviousStage[0], RunCyclePlan.PopulatePhasesFourStageModel());
+
+
+            //17 Stage - Single Stage Selection Model - All Combinations checked
+            //CyclePlan = RunAllSS.RunAlgorithm(TwelvePhaseRoadStates, PreviousStage[0], RunCyclePlan.PopulatePhasesSeventeenStageModel());
+
+
+            //2 Stage - Single Stage Selection Model - All Combinations checked
+            //CyclePlan = RunAllSS.RunAlgorithm(TwelvePhaseRoadStates, PreviousStage[0], RunCyclePlan.PopulatePhasesTwoStageModel());
 
             List<int[]> FinalAnswer = new List<int[]>();        //This is to remove the (99,5) Intergreen Phase
             FinalAnswer.Clear();

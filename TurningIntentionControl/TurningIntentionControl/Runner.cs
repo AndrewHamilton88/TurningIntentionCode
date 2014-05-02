@@ -53,7 +53,8 @@ namespace ParamincsSNMPcontrol
             }*/
             
             
-            int iterations = 0;
+            //int iterations = 0;
+            int iterations = 10;
             int[] PreviousStage = new int[1];
             PreviousStage[0] = 1;
 
@@ -81,8 +82,11 @@ namespace ParamincsSNMPcontrol
                     SynchDone = false;
                     Connector.PCont.SimRunAndLogAndPause();
                     while (SynchDone == false) ;
-                    Thread.Sleep(1000);//TODO This is to give paramics time to save the snapfile should make this explicit in the future
+                    //Thread.Sleep(1000);//TODO This is to give paramics time to save the snapfile should make this explicit in the future
 
+                    //Trial to make any simulation time work...
+                    iterations += (SynchDelay / 100);       //NB. SynchDelay is recorded in Centi-seconds
+                    //NB. That I have commented out the iterations++ below for this to work
                 }
                 
                 //This function needs to be editted to be able to use a cycle plan rather than a single stage number...
@@ -101,8 +105,8 @@ namespace ParamincsSNMPcontrol
                 {
                     ExitSim = true;
                 }
-                iterations++;
-                //SynchDelay += 100;            //AH tested this to vary the SynchDelay dynamically which works for the C# model, but the snapshot files do not link up with the Time of Day function anymore
+                //iterations++;
+                
 
             } while (ExitSim == false);
             //Connector.PCont.Disconnect();

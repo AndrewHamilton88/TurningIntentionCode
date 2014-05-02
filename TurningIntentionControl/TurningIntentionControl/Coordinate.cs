@@ -222,6 +222,11 @@ namespace ParamincsSNMPcontrol
 
         }
 
+        public void SaveTables(int RunNumber, string FileDirectory)
+        {
+            NetDat.SaveBothTables(RunNumber, FileDirectory);
+        }
+
         private string BuildLifetimeCondition(string ToD)
         {
             string Condition = "AtTime = '" + ToD + "' AND (";
